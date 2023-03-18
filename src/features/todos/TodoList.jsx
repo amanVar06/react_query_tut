@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { addTodo, updateTodo, deleteTodo, getTodos } from "../../api/todosApi";
+import { addTodo, getTodos } from "../../api/todosApi";
 
+import Todoitem from "./Todoitem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
 const TodoList = () => {
@@ -25,20 +26,6 @@ const TodoList = () => {
   //and that cache is named todos
 
   const addTodoMutation = useMutation(addTodo, {
-    onSuccess: () => {
-      //invalidates cache and refetch
-      queryClient.invalidateQueries("todos");
-    },
-  });
-
-  const updateTodoMutation = useMutation(updateTodo, {
-    onSuccess: () => {
-      //invalidates cache and refetch
-      queryClient.invalidateQueries("todos");
-    },
-  });
-
-  const deleteTodoMutation = useMutation(deleteTodo, {
     onSuccess: () => {
       //invalidates cache and refetch
       queryClient.invalidateQueries("todos");
@@ -76,30 +63,7 @@ const TodoList = () => {
     content = <p>{error.message}</p>;
   } else {
     content = todos.map((todo) => {
-      return (
-        <article key={todo.id}>
-          <div className="todo">
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              id={todo.id}
-              onChange={() =>
-                updateTodoMutation.mutate({
-                  ...todo,
-                  completed: !todo.completed,
-                })
-              }
-            />
-            <label htmlFor={todo.id}>{todo.title}</label>
-          </div>
-          <button
-            className="trash"
-            onClick={() => deleteTodoMutation.mutate({ id: todo.id })}
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
-        </article>
-      );
+      return <Todoitem key={todo.id} todo={todo} />;
     });
   }
 
